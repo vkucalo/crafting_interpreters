@@ -19,13 +19,13 @@ static void run(const string& source) {
     }
 }
 
-static void runFile(char* path){
+static void run_file(char* path){
     ifstream file_contents(path);
     stringstream file_as_sstream;
     file_as_sstream << file_contents.rdbuf();
 }
 
-static void runPrompt(){
+static void run_prompt(){
     error_logger log;
     for(;;){
         cout << ">";
@@ -38,7 +38,7 @@ static void runPrompt(){
 
 bool error_logger::had_error = false;
 
-int main(){
-    run("hej x = lol if ( 4 < 32.323) ");
-    return 0;
-}
+//int main(){
+//    run("hej x = lol if ( 4 < 32.323) ");
+//    return 0;
+//}
