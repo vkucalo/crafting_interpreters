@@ -1,41 +1,65 @@
 #pragma once
-#include "token.h"
+#include "token.h" 
 
-
+template <typename R>
 struct expr {
-	
+	virtual R accept();
 };
-
-struct binary : public expr {
-	expr left;
+template <typename R>
+ struct binary : expr<R> { 
+	expr<R> left;
 	token oper;
-	expr right;
-	binary(expr left, token oper, expr right) {
-		this->left = left;
-		this->oper = oper;
-		this->right = right;
+	expr<R> right;
+
+	binary(expr<R> left,token oper,expr<R> right) {
+		this-> left =  left;
+		this-> oper =  oper;
+		this-> right =  right;
+	} 
+
+	virtual R accept(expr_visitor& visitor) {
+		return visitor.visit(this);
 	}
 };
 
-struct grouping : public expr {
-	expr expression;
-	grouping(expr expression) {
-		this->expression = expression;
+template <typename R>
+ struct grouping : expr<R> { 
+	expr<R> expression;
+
+	grouping(expr<R> expression) {
+		this-> expression =  expression;
+	} 
+
+	virtual R accept(expr_visitor& visitor) {
+		return visitor.visit(this);
 	}
 };
 
-struct literal : public expr {
+template <typename R>
+ struct literal : expr<R> { 
 	std::string value;
-	literal(const std::string& value) {
-		this->value = value;
+
+	literal(std::string value) {
+		this-> value =  value;
+	} 
+
+	virtual R accept(expr_visitor& visitor) {
+		return visitor.visit(this);
 	}
 };
 
-struct unary : public expr {
+template <typename R>
+ struct unary : expr<R> { 
 	token oper;
-	expr right;
-	unary(token oper, expr right) {
-		this->oper = oper;
-		this->right = right;
+	expr<R> right;
+
+	unary(token oper,expr<R> right) {
+		this-> oper =  oper;
+		this-> right =  right;
+	} 
+
+	virtual R accept(expr_visitor& visitor) {
+		return visitor.visit(this);
 	}
-}
+};
+

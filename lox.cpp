@@ -5,9 +5,7 @@
 #include <sstream>
 #include "scanner.h"
 
-
 using namespace std;
-
 
 static void run(const string& source) {
     error_logger log;
