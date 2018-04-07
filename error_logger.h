@@ -1,9 +1,7 @@
 //
 // Created by viktor on 07.01.18..
 //
-
-#ifndef CRAFTINGINTERPRETERS_ERROR_LOGGER_H
-#define CRAFTINGINTERPRETERS_ERROR_LOGGER_H
+#pragma once
 
 #include <string>
 #include <iostream>
@@ -22,5 +20,3 @@ struct error_logger{
     }
 
 };
-
-#endif //CRAFTINGINTERPRETERS_ERROR_LOGGER_H

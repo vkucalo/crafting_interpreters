@@ -1,65 +1,66 @@
 #pragma once
-#include "token.h" 
+#include <string>
+#include "token.h"
 
-template <typename R>
+
+struct binary;
+struct grouping;
+struct unary;
+struct literal;
+
+struct expr_visitor{
+    virtual std::string visit(binary* expr) = 0;
+    virtual std::string visit(grouping* expr) = 0;
+    virtual std::string visit(unary* expr) = 0;
+    virtual std::string visit(literal* expr) = 0;
+};
+
 struct expr {
-	virtual R accept();
-};
-template <typename R>
- struct binary : expr<R> { 
-	expr<R> left;
-	token oper;
-	expr<R> right;
-
-	binary(expr<R> left,token oper,expr<R> right) {
-		this-> left =  left;
-		this-> oper =  oper;
-		this-> right =  right;
-	} 
-
-	virtual R accept(expr_visitor& visitor) {
-		return visitor.visit(this);
-	}
+    virtual std::string accept(expr_visitor* visitor) = 0; 
 };
 
-template <typename R>
- struct grouping : expr<R> { 
-	expr<R> expression;
+struct grouping : expr {
+    expr* expression;
 
-	grouping(expr<R> expression) {
-		this-> expression =  expression;
-	} 
+    grouping(expr* e) : expression(e) {};
 
-	virtual R accept(expr_visitor& visitor) {
-		return visitor.visit(this);
-	}
+    std::string accept(expr_visitor* visitor){
+        return visitor->visit(this);
+    }
 };
 
-template <typename R>
- struct literal : expr<R> { 
+struct binary : expr {
+    expr* left;
+    token op;
+    expr* right;
+
+    binary(expr* l, token tok, expr* r) : left(l), op(tok), right(r) {};
+
+    std::string accept(expr_visitor* visitor){
+        return visitor->visit(this);
+    }
+};
+
+struct unary : expr {
+    expr* ex;
+    token op;
+
+    unary(expr* e, token t) : ex(e), op(t) {};
+
+    std::string accept(expr_visitor* visitor){
+        return visitor->visit(this);
+    }
+};
+
+
+struct literal : expr{ 
 	std::string value;
 
-	literal(std::string value) {
-		this-> value =  value;
-	} 
+	literal(std::string val) : value(val) {};
 
-	virtual R accept(expr_visitor& visitor) {
-		return visitor.visit(this);
-	}
+    std::string accept(expr_visitor* visitor){
+        return visitor->visit(this);
+    }
 };
 
-template <typename R>
- struct unary : expr<R> { 
-	token oper;
-	expr<R> right;
-
-	unary(token oper,expr<R> right) {
-		this-> oper =  oper;
-		this-> right =  right;
-	} 
-
-	virtual R accept(expr_visitor& visitor) {
-		return visitor.visit(this);
-	}
-};
 

@@ -1,14 +1,10 @@
+#pragma once
 #include <string>
 #include <vector>
 #include <sstream>
 #include <map>
 #include "token.h"
 #include "error_logger.h"
-
-
-#ifndef CRAFTINGINTERPRETERS_SCANNER_H
-#define CRAFTINGINTERPRETERS_SCANNER_H
-
 
 class scanner {
 
@@ -45,7 +41,7 @@ class scanner {
     }
 
     bool is_digit(char c){
-        return c > '0' && c < '9';
+        return std::isdigit(c);
     }
 
     void add_token(token_type type){
@@ -80,18 +76,25 @@ class scanner {
     }
 
     void number(){
-        while (is_digit(peek())) advance();
+
+        while (is_digit(peek())){
+            advance();
+        } 
 
         if (peek() == '.' && is_digit(peek_next())){
             advance();
-            while(is_digit(peek())) advance();
+            while (is_digit(peek())){
+                advance();
+            } 
         }
 
         add_token(NUMBER, source.substr(start, current - start));
     }
 
     void identifier(){
-        while(isalnum(peek())) advance();
+        while(isalnum(peek())){
+            advance();
+        } 
         add_token(IDENTIFIER);
     }
 
@@ -171,6 +174,3 @@ public:
 
 
 };
-
-
-#endif //CRAFTINGINTERPRETERS_SCANNER_H

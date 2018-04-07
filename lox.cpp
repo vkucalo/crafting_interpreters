@@ -36,7 +36,13 @@ static void run_prompt(){
 
 bool error_logger::had_error = false;
 
-//int main(){
-//    run("hej x = lol if ( 4 < 32.323) ");
-//    return 0;
-//}
+// int main(int argc, char** argv){
+//     std::string argument = argv[1];
+//     if (argc < 2)
+//         std::cout << "Invalid argument \t -s for source and -i for interactive" << std::endl;
+//     if (argument == "-i")
+//         run_prompt();
+//     if (argument == "-s")
+//         run(argv[2]);
+//     return 0;
+// }

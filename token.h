@@ -2,8 +2,7 @@
 // Created by viktor on 06.01.18..
 //
 
-#ifndef CRAFTINGINTERPRETERS_TOKEN_H
-#define CRAFTINGINTERPRETERS_TOKEN_H
+#pragma once
 
 #include <string>
 
@@ -12,17 +11,17 @@ enum token_type {
     COMMA, DOT, MINUS, PLUS, SEMICOLON, SLASH, STAR,
 
     // One or two character tokens
-            BANG, BANG_EQUAL,
-            EQUAL, EQUAL_EQUAL,
-            GREATER, GREATER_EQUAL,
-            LESS, LESS_EQUAL,
+        BANG, BANG_EQUAL,
+        EQUAL, EQUAL_EQUAL,
+        GREATER, GREATER_EQUAL,
+        LESS, LESS_EQUAL,
 
     // Literals
-            IDENTIFIER, STRING, NUMBER,
+        IDENTIFIER, STRING, NUMBER,
 
     // Keywords
-            AND, CLASS, ELSE, FALSE, FUN, FOR, IF, NIL, OR,
-            PRINT, RETURN, SUPER, THIS, TRUE, VAR, WHILE,
+        AND, CLASS, ELSE, FALSE, FUN, FOR, IF, NIL, OR,
+        PRINT, RETURN, SUPER, THIS, TRUE, VAR, WHILE,
 
     EOTF
 };
@@ -42,7 +41,4 @@ struct token {
         return std::string(lexeme + " " + literal);
     }
 
-
-
 };
-#endif //CRAFTINGINTERPRETERS_TOKEN_H
