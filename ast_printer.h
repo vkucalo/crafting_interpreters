@@ -5,6 +5,11 @@
 #include <iostream>
 
 struct ast_printer : expr_visitor {
+	expr* expression;
+
+
+	ast_printer(expr* ex) : expression(ex) {}
+
 
 	std::string visit(binary* expr){
 		std::string out;
@@ -40,5 +45,8 @@ struct ast_printer : expr_visitor {
 		if (expr->value.empty()) return "nil";
 		return expr->value;
 	}
-
+	
+	std::string print(){
+		return expression->accept(this);
+	}
 };

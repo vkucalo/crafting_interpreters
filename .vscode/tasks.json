@@ -6,7 +6,7 @@
         {
             "label": "interpreter",
             "type": "shell",
-            "command": "g++ main.cpp",
+            "command": "g++ lox.cpp",
             "args": [
                 "-std=c++17",
                 "-g"

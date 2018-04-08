@@ -4,6 +4,9 @@
 #include <vector>
 #include <sstream>
 #include "scanner.h"
+#include "ast_printer.h"
+#include "parser.h"
+
 
 using namespace std;
 
@@ -11,10 +14,11 @@ static void run(const string& source) {
     error_logger log;
     scanner scanner(source, log);
     vector<token> tokens = scanner.scan_tokens();
+    parser p(tokens);
+    expr* expr = p.parse();
 
-    for(auto& token : tokens) {
-        cout << token.str() << endl;
-    }
+    ast_printer printer(expr);
+    std::cout << printer.print();
 }
 
 static void run_file(char* path){
@@ -36,13 +40,13 @@ static void run_prompt(){
 
 bool error_logger::had_error = false;
 
-// int main(int argc, char** argv){
-//     std::string argument = argv[1];
-//     if (argc < 2)
-//         std::cout << "Invalid argument \t -s for source and -i for interactive" << std::endl;
-//     if (argument == "-i")
-//         run_prompt();
-//     if (argument == "-s")
-//         run(argv[2]);
-//     return 0;
-// }
+int main(int argc, char** argv){
+    std::string argument = argv[1];
+    if (argc < 2)
+        std::cout << "Invalid argument \t -s for source and -i for interactive" << std::endl;
+    if (argument == "-i")
+        run_prompt();
+    if (argument == "-s")
+        run(argv[2]);
+    return 0;
+}
