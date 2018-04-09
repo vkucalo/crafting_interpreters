@@ -32,7 +32,7 @@ struct parser {
         return is_at_end() ? false : peek().type == type;
     }
 
-    bool match(std::vector<token_type>& types){
+    bool match(std::vector<token_type> types){
         for (auto& type : types){
             if (check(type)){
                 advance();
@@ -56,72 +56,67 @@ struct parser {
     }
 
     expr* primary(){
-        if (check(token_type::FALSE))
-            return &literal("false");
-        if (check(token_type::TRUE))
-            return &literal("true");
-        if (check(token_type::NIL))
-            return &literal("nil");
-        if (check(token_type::NUMBER) || check(token_type::STRING))
-            return &literal(previous().literal);
-
-        if (check(token_type::LEFT_PAREN)){
+        if (match({FALSE}))
+            return new literal("false");
+        if (match({TRUE}))
+            return new literal("true");
+        if (match({NIL}))
+            return new literal("nil");
+        if (match({NUMBER, STRING}))
+            return new literal(previous().literal);
+ 
+        if (match({LEFT_PAREN})){
             expr* expr = expression();
             consume(token_type::RIGHT_PAREN, "Expect ) after expression");
-            return &grouping(expr);
+            return new grouping(expr);
         }
     }
 
     expr* unar(){
-        std::vector<token_type> eq {token_type::BANG, token_type::MINUS};
-        if(match(eq)){
+        if(match({BANG, MINUS})){
             token oper = previous();
             expr* right = unar();
-            return &unary(right, oper);
+            return new unary(right, oper);
         }
         return primary();
     }
 
     expr* multiplication(){
         expr* expression = unar();
-        std::vector<token_type> eq {token_type::SLASH, token_type::STAR};
-        while(match(eq)){
+        while(match({SLASH, STAR})){
             token oper = previous();
             expr* right = unar();
-            expression = &binary(expression, oper, right);
+            expression = new binary(expression, oper, right);
         }
         return expression;
     }
 
     expr* addition(){
         expr* expression = multiplication();
-        std::vector<token_type> eq {token_type::MINUS, token_type::PLUS};
-        while(match(eq)){
+        while(match({MINUS, PLUS})){
             token oper = previous();
             expr* right = multiplication();
-            expression = &binary(expression, oper, right);
+            expression = new binary(expression, oper, right);
         }
         return expression;
     }
 
     expr* comparison(){
         expr* expression = addition();
-        std::vector<token_type> eq {token_type::LESS, token_type::LESS_EQUAL, token_type::GREATER, token_type::GREATER_EQUAL};
-        while(match(eq)){
+        while(match({LESS, LESS_EQUAL, GREATER, GREATER_EQUAL})){
             token oper = previous();
             expr* right = addition();
-            expression = &binary(expression, oper, right);
+            expression = new binary(expression, oper, right);
         }
         return expression;
     }
 
     expr* equality(){
         expr* expression = comparison();
-        std::vector<token_type> eq {token_type::BANG_EQUAL, token_type::EQUAL_EQUAL};
-        while(match(eq)){
+        while(match({BANG_EQUAL,EQUAL_EQUAL})){
             token oper = previous();
             expr* right = comparison();
-            expression = &binary(expression, oper, right);
+            expression = new binary(expression, oper, right);
         }
         return expression;
     }
