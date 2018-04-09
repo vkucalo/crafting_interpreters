@@ -52,7 +52,7 @@ struct parser {
     token consume(token_type type, std::string message){
         if (check(type))
             return advance();
-        std::cout << "error!";
+        std::cout << message;
     }
 
     expr* primary(){
@@ -123,6 +123,17 @@ struct parser {
 
     expr* expression(){
         return equality();
+    }
+
+    expr* ternary_exp(){
+        expr* exprs = expression();
+        while(match({QMARK})){
+            expr* thenn = expression();
+            consume(COLON, "expected a : ");
+            expr* elsee = expression();
+            exprs = new ternary(exprs, thenn, elsee);
+        }
+        return exprs;
     }
 
     void synchronize() {

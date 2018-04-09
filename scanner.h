@@ -129,6 +129,8 @@ class scanner {
             case '+': add_token(PLUS); break;
             case ';': add_token(SEMICOLON); break;
             case '*': add_token(STAR); break;
+            case '?': add_token(QMARK); break;
+            case ':': add_token(COLON); break;
             case '!': add_token(match('=') ? BANG_EQUAL : BANG); break;
             case '=': add_token(match('=') ? EQUAL_EQUAL : BANG); break;
             case '<': add_token(match('=') ? LESS_EQUAL : BANG); break;
