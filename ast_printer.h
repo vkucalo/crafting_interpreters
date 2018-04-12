@@ -6,47 +6,45 @@
 
 struct ast_printer : expr_visitor {
 	expr* expression;
-
+	std::string out;
 
 	ast_printer(expr* ex) : expression(ex) {}
 
 
-	std::string visit(binary* expr){
-		std::string out;
+	void visit(binary* expr){
 		out += "(";
 		out += expr->op.lexeme;
 		out += " ";
-		out += expr->left->accept(this);
+		expr->left->accept(this);
 		out += " ";
-		out += expr->right->accept(this);
+		expr->right->accept(this);
 		out += " )";
-		return out;
 	}
 
-	std::string visit(grouping* expr){
-		std::string out;
+	void visit(grouping* expr){
 		out += "grouping (";
 		out += " ";
-		out += expr->expression->accept(this);
+		expr->expression->accept(this);
 		out +=  " )";
-		return out;
 	}	
 	
-	std::string visit(unary* expr){
-		std::string out;
+	void visit(unary* expr){
 		out += "(";
 		out += " ";
-		out += expr->ex->accept(this);
+		expr->ex->accept(this);
 		out += " )";
-		return out;
 	}
 	
-	std::string visit(literal* expr){
-		if (expr->value.empty()) return "nil";
-		return expr->value;
+	void visit(literal* expr){
+		if (expr->value.empty()){
+			out+= "nil";
+			return;
+		} 
+		out += expr->value;
 	}
 	
 	std::string print(){
-		return expression->accept(this);
+		expression->accept(this);
+		return this->out;
 	}
 };

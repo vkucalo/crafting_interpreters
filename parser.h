@@ -62,9 +62,10 @@ struct parser {
             return new literal("true");
         if (match({NIL}))
             return new literal("nil");
-        if (match({NUMBER, STRING}))
+        if (match({NUMBER}))
+            return new literal(std::stod(previous().literal));
+        if (match({STRING}))
             return new literal(previous().literal);
- 
         if (match({LEFT_PAREN})){
             expr* expr = expression();
             consume(token_type::RIGHT_PAREN, "Expect ) after expression");
@@ -125,16 +126,16 @@ struct parser {
         return equality();
     }
 
-    expr* ternary_exp(){
-        expr* exprs = expression();
-        while(match({QMARK})){
-            expr* thenn = expression();
-            consume(COLON, "expected a : ");
-            expr* elsee = expression();
-            exprs = new ternary(exprs, thenn, elsee);
-        }
-        return exprs;
-    }
+    // expr* ternary_exp(){
+    //     expr* exprs = expression();
+    //     while(match({QMARK})){
+    //         expr* thenn = expression();
+    //         consume(COLON, "expected a : ");
+    //         expr* elsee = expression();
+    //         exprs = new ternary(exprs, thenn, elsee);
+    //     }
+    //     return exprs;
+    // }
 
     void synchronize() {
         advance();

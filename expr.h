@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include "token.h"
-
+#include "value.h"
 
 struct binary;
 struct grouping;
@@ -10,15 +10,15 @@ struct literal;
 struct ternary;
 
 struct expr_visitor{
-    virtual std::string visit(binary* expr) = 0;
-    virtual std::string visit(grouping* expr) = 0;
-    virtual std::string visit(unary* expr) = 0;
-    virtual std::string visit(literal* expr) = 0;
-    virtual std::string visit(ternary* expr) = 0;
+    virtual void visit(binary* expr) = 0;
+    virtual void visit(grouping* expr) = 0;
+    virtual void visit(unary* expr) = 0;
+    virtual void visit(literal* expr) = 0;
+    // virtual void visit(ternary* expr) = 0;
 };
 
 struct expr {
-    virtual std::string accept(expr_visitor* visitor) = 0; 
+    virtual void accept(expr_visitor* visitor) = 0; 
 };
 
 struct grouping : expr {
@@ -26,8 +26,8 @@ struct grouping : expr {
 
     grouping(expr* e) : expression(e) {};
 
-    std::string accept(expr_visitor* visitor){
-        return visitor->visit(this);
+    void accept(expr_visitor* visitor){
+        visitor->visit(this);
     }
 };
 
@@ -38,8 +38,8 @@ struct binary : expr {
 
     binary(expr* l, token tok, expr* r) : left(l), op(tok), right(r) {};
 
-    std::string accept(expr_visitor* visitor){
-        return visitor->visit(this);
+    void accept(expr_visitor* visitor){
+        visitor->visit(this);
     }
 };
 
@@ -49,30 +49,36 @@ struct unary : expr {
 
     unary(expr* e, token t) : ex(e), op(t) {};
 
-    std::string accept(expr_visitor* visitor){
-        return visitor->visit(this);
-    }
-};
-
-struct ternary : expr {
-    expr* ex;
-    expr* then_branch;
-    expr* else_branch;
-
-    ternary(expr* e, expr* t_b, expr* e_b) : ex(e), then_branch(t_b), else_branch(e_b) {}
-
-    std::string accept(expr_visitor* visitor){
+    void accept(expr_visitor* visitor){
         visitor->visit(this);
     }
 };
 
+// struct ternary : expr {
+//     expr* ex;
+//     expr* then_branch;
+//     expr* else_branch;
+
+//     ternary(expr* e, expr* t_b, expr* e_b) : ex(e), then_branch(t_b), else_branch(e_b) {}
+
+//     void accept(expr_visitor* visitor){
+//         visitor->visit(this);
+//     }
+// };
+
 struct literal : expr{ 
-	std::string value;
+	value val;
 
-	literal(std::string val) : value(val) {};
+	literal(std::string v) : val(v) {};
 
-    std::string accept(expr_visitor* visitor){
-        return visitor->visit(this);
+    literal(double d) : val(d) {};
+
+    literal(bool b) : val(b) {};
+
+    literal() : val() {};
+
+    void accept(expr_visitor* visitor){
+        visitor->visit(this);
     }
 };
 

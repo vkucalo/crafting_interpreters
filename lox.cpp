@@ -4,9 +4,9 @@
 #include <vector>
 #include <sstream>
 #include "scanner.h"
-#include "ast_printer.h"
+// #include "ast_printer.h"
 #include "parser.h"
-
+#include "interpreter.h"
 
 using namespace std;
 
@@ -17,8 +17,8 @@ static void run(const string& source) {
     parser p(tokens);
     expr* expr = p.parse();
 
-    ast_printer printer(expr);
-    std::cout << printer.print();
+    interpreter inter(expr);
+    std::cout << inter.interpret().stringify();
 }
 
 static void run_file(char* path){
