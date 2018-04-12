@@ -36,11 +36,11 @@ struct ast_printer : expr_visitor {
 	}
 	
 	void visit(literal* expr){
-		if (expr->value.empty()){
+		if (expr->val.v_type == NILL_VALUE){
 			out+= "nil";
 			return;
 		} 
-		out += expr->value;
+		out += expr->val.stringify();
 	}
 	
 	std::string print(){

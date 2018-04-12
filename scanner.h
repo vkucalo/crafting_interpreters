@@ -132,9 +132,9 @@ class scanner {
             case '?': add_token(QMARK); break;
             case ':': add_token(COLON); break;
             case '!': add_token(match('=') ? BANG_EQUAL : BANG); break;
-            case '=': add_token(match('=') ? EQUAL_EQUAL : BANG); break;
-            case '<': add_token(match('=') ? LESS_EQUAL : BANG); break;
-            case '>': add_token(match('=') ? GREATER_EQUAL : BANG); break;
+            case '=': add_token(match('=') ? EQUAL_EQUAL : EQUAL); break;
+            case '<': add_token(match('=') ? LESS_EQUAL : LESS); break;
+            case '>': add_token(match('=') ? GREATER_EQUAL : GREATER); break;
             case '/':
                 if (match('/'))
                     while (peek () != '\n' && !has_next()) advance();

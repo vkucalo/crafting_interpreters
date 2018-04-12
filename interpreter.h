@@ -16,8 +16,17 @@ struct interpreter : expr_visitor {
 
     bool is_truthy(value val){
         if (val.v_type == NILL_VALUE) return false;
-        if (val.v_type == BOOLEAN_VALUE) return true;
+        if (val.v_type == BOOLEAN_VALUE) return val.boolean_value;
+        if (val.v_type == DOUBLE_VALUE) return val.double_value != 0;
         return true;
+    }
+
+    bool is_equal(value left, value right){
+        if (left.v_type == BOOLEAN_VALUE && right.v_type == BOOLEAN_VALUE) return left.boolean_value == right.boolean_value;
+        if (left.v_type == DOUBLE_VALUE && right.v_type == DOUBLE_VALUE) return left.double_value == right.double_value;
+        if (left.v_type == STRING_VALUE && right.v_type == STRING_VALUE) return left.string_value == right.string_value;
+        if (left.v_type == NILL_VALUE && right.v_type == NILL_VALUE) return true;
+        return false;
     }
 
     void visit(binary* expr){
@@ -42,6 +51,28 @@ struct interpreter : expr_visitor {
                 if (left.v_type == DOUBLE_VALUE && right.v_type == DOUBLE_VALUE)
                     result = value(left.double_value / right.double_value);
                 break;    
+            case LESS:
+                if (left.v_type == DOUBLE_VALUE && right.v_type == DOUBLE_VALUE)
+                    result = value(left.double_value < right.double_value);
+                break;   
+            case LESS_EQUAL:
+                if (left.v_type == DOUBLE_VALUE && right.v_type == DOUBLE_VALUE)
+                    result = value(left.double_value <= right.double_value);
+                break; 
+            case GREATER:
+                if (left.v_type == DOUBLE_VALUE && right.v_type == DOUBLE_VALUE)
+                    result = value(left.double_value > right.double_value);
+                break;
+            case GREATER_EQUAL:
+                if (left.v_type == DOUBLE_VALUE && right.v_type == DOUBLE_VALUE)
+                    result = value(left.double_value >= right.double_value);
+                break;
+            case BANG_EQUAL:
+                result = value(!is_equal(left,right));
+                break;
+            case EQUAL_EQUAL:
+                result = value(is_equal(left,right));
+                break;
             default:
                 result = value();
                 break;

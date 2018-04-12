@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/a.out",
-            "args": ["-s", "6==3"],
+            "args": ["-s", "'(6*3)>(2*4)'"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

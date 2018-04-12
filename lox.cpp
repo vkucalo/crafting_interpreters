@@ -4,7 +4,7 @@
 #include <vector>
 #include <sstream>
 #include "scanner.h"
-// #include "ast_printer.h"
+#include "ast_printer.h"
 #include "parser.h"
 #include "interpreter.h"
 
@@ -18,6 +18,8 @@ static void run(const string& source) {
     expr* expr = p.parse();
 
     interpreter inter(expr);
+    ast_printer asp(expr);
+    std::cout << asp.print() << std::endl;
     std::cout << inter.interpret().stringify();
 }
 
