@@ -1,5 +1,5 @@
 #pragma once
-#include "expr.h"
+#include "stmt.h"
 #include <vector>
 #include <iostream>
 
@@ -71,6 +71,7 @@ struct parser {
             consume(token_type::RIGHT_PAREN, "Expect ) after expression");
             return new grouping(expr);
         }
+
     }
 
     expr* unar(){
@@ -159,8 +160,28 @@ struct parser {
         }
     }
 
-    expr* parse(){
-        return expression();
+    expr_stmt* expression_statement(){
+        expr* ex = expression();
+        consume(SEMICOLON, "Expected ; after statement.");
+        return new expr_stmt(ex);
     }
 
+    print_stmt* print_statement(){
+        expr* ex = expression();
+        consume(SEMICOLON, "Expected ; after statement.");
+        return new print_stmt(ex);
+    }
+
+    stmt* statement(){
+        if (match({PRINT}))
+            return print_statement();
+        return expression_statement();
+    }
+
+    std::vector<stmt*> parse(){
+        std::vector<stmt*> statements;
+        while(!is_at_end())
+            statements.emplace_back(statement());
+        return statements;
+    }
 };

@@ -23,7 +23,10 @@ struct value {
     std::string stringify(){
         switch(v_type){
             case STRING_VALUE: return string_value;
-            case DOUBLE_VALUE: return std::to_string(double_value);
+            case DOUBLE_VALUE: 
+                if (int(double_value) == double_value)
+                    return std::to_string(int(double_value));
+                return std::to_string(double_value);
             case BOOLEAN_VALUE: return std::to_string(boolean_value);
             case NILL_VALUE: return "nill";
         }

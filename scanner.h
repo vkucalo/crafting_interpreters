@@ -95,7 +95,9 @@ class scanner {
         while(isalnum(peek())){
             advance();
         } 
-        add_token(IDENTIFIER);
+        std::string text = source.substr(start, current - start);
+        auto type = keywords.find(text);
+        type == keywords.end() ? add_token(IDENTIFIER) : add_token(type->second);
     }
 
     void string(){

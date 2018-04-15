@@ -8,14 +8,14 @@
 
 struct error_logger{
 
-    static bool had_error;
+    bool had_error;
 
-    static void report(int line, std::string where, std::string message){
-        std::cout << "[line ", line, " ] Error ", where, ": ", message;
+    void report(int line, std::string where, std::string message){
+        std::cout << "[line " << line << " ] Error " << where << ": " << message;
         had_error = true;
     }
 
-    static void error(std::string message, int line){
+    void error(std::string message, int line){
         report(line, "", message);
     }
 

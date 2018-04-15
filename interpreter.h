@@ -1,17 +1,31 @@
 #pragma once
 #include "expr.h"
 #include "value.h"
+#include "lox_runtime_error.h"
+#include "stmt.h"
 
-struct interpreter : expr_visitor {
+struct interpreter : expr_visitor, stmt_visitor {
 
     value result;
-    expr* expression;
-
-    interpreter(expr* expr) : expression(expr) {}
 
     value evaluate(expr* expression){
         expression->accept(this);
         return result;
+    }
+
+    void check_number_operand(token oper, value operand){
+        if (operand.v_type == DOUBLE_VALUE) 
+            return;
+        throw lox_runtime_error(oper, "Operand must be a number.");
+    }
+
+    void check_number_operands(token oper, value left, value right){
+        if (left.v_type == DOUBLE_VALUE && right.v_type == DOUBLE_VALUE){ 
+            if (right.double_value == 0 && oper.type == SLASH)
+                throw lox_runtime_error(oper, "Division by 0 not allowed!");
+            return;
+            }
+        throw lox_runtime_error(oper, "Operand must be a number.");
     }
 
     bool is_truthy(value val){
@@ -36,36 +50,38 @@ struct interpreter : expr_visitor {
             case PLUS:
                 if (left.v_type == STRING_VALUE && right.v_type == STRING_VALUE)
                     result = value(left.string_value + right.string_value);
-                if (left.v_type == DOUBLE_VALUE && right.v_type == DOUBLE_VALUE)
+                else if (left.v_type == DOUBLE_VALUE && right.v_type == DOUBLE_VALUE)
                     result = value(left.double_value + right.double_value);
+                else
+                    throw lox_runtime_error(expr->op, "Unsupported operation.");
                 break;
             case MINUS:
-                if (left.v_type == DOUBLE_VALUE && right.v_type == DOUBLE_VALUE)
-                    result = value(left.double_value - right.double_value);
+                check_number_operands(expr->op, left, right);
+                result = value(left.double_value - right.double_value);
                 break;    
             case STAR:
-                if (left.v_type == DOUBLE_VALUE && right.v_type == DOUBLE_VALUE)
-                    result = value(left.double_value * right.double_value);
+                check_number_operands(expr->op, left, right);
+                result = value(left.double_value * right.double_value);
                 break;
             case SLASH:
-                if (left.v_type == DOUBLE_VALUE && right.v_type == DOUBLE_VALUE)
-                    result = value(left.double_value / right.double_value);
+                check_number_operands(expr->op, left, right);
+                result = value(left.double_value / right.double_value);
                 break;    
             case LESS:
-                if (left.v_type == DOUBLE_VALUE && right.v_type == DOUBLE_VALUE)
-                    result = value(left.double_value < right.double_value);
+                check_number_operands(expr->op, left, right);
+                result = value(left.double_value < right.double_value);
                 break;   
             case LESS_EQUAL:
-                if (left.v_type == DOUBLE_VALUE && right.v_type == DOUBLE_VALUE)
-                    result = value(left.double_value <= right.double_value);
+                check_number_operands(expr->op, left, right);
+                result = value(left.double_value <= right.double_value);
                 break; 
             case GREATER:
-                if (left.v_type == DOUBLE_VALUE && right.v_type == DOUBLE_VALUE)
-                    result = value(left.double_value > right.double_value);
+                check_number_operands(expr->op, left, right);
+                result = value(left.double_value > right.double_value);
                 break;
             case GREATER_EQUAL:
-                if (left.v_type == DOUBLE_VALUE && right.v_type == DOUBLE_VALUE)
-                    result = value(left.double_value >= right.double_value);
+                check_number_operands(expr->op, left, right);
+                result = value(left.double_value >= right.double_value);
                 break;
             case BANG_EQUAL:
                 result = value(!is_equal(left,right));
@@ -88,8 +104,8 @@ struct interpreter : expr_visitor {
 
         switch(expr->op.type){
             case MINUS: 
-                if (right.v_type == DOUBLE_VALUE) 
-                    result = value(-right.double_value);
+                check_number_operand(expr->op, right);
+                result = value(-right.double_value);
                 break;
             case BANG:
                 if (is_truthy(right))
@@ -105,8 +121,28 @@ struct interpreter : expr_visitor {
 		result = expr->val; 
 	}
 
-    value interpret(){
-        expression->accept(this);
+    void visit(expr_stmt* ex_stmt){
+        evaluate(ex_stmt->expression);
+    }
+
+    void visit(print_stmt* pr_stmt){
+        std::cout << evaluate(pr_stmt->expression).stringify();
+        return;
+    }
+
+    void execute(stmt* statement){
+        statement->accept(this);
+    }
+
+    value interpret(std::vector<stmt*>& statements){
+        try{
+            for(auto& statement : statements){
+                execute(statement);
+            }
+        }
+        catch (std::exception e){
+            std::cout << "error!";
+        }
         return result;
     }
 
