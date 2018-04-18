@@ -8,12 +8,17 @@ struct grouping;
 struct unary;
 struct literal;
 struct ternary;
+struct var_expr;
+struct assignment_expr;
+
 
 struct expr_visitor{
     virtual void visit(binary* expr) = 0;
     virtual void visit(grouping* expr) = 0;
     virtual void visit(unary* expr) = 0;
     virtual void visit(literal* expr) = 0;
+    virtual void visit(var_expr* expr) = 0;
+    virtual void visit(assignment_expr* expr) = 0;
     // virtual void visit(ternary* expr) = 0;
 };
 
@@ -66,7 +71,7 @@ struct unary : expr {
 //     }
 // };
 
-struct literal : expr{ 
+struct literal : expr { 
 	value val;
 
 	literal(std::string v) : val(v) {};
@@ -76,6 +81,27 @@ struct literal : expr{
     literal(bool b) : val(b) {};
 
     literal() : val() {};
+
+    void accept(expr_visitor* visitor){
+        visitor->visit(this);
+    }
+};
+
+struct var_expr : expr {
+    token tok;
+
+    var_expr(token t) : tok(t) {};
+
+    void accept(expr_visitor* visitor){
+        visitor->visit(this);
+    }
+};
+
+struct assignment_expr : expr {
+    token left;
+    expr* ex;
+
+    assignment_expr(expr* e, token l) : ex(e), left(l) {};
 
     void accept(expr_visitor* visitor){
         visitor->visit(this);

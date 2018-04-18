@@ -3,10 +3,17 @@
 #include "value.h"
 #include "lox_runtime_error.h"
 #include "stmt.h"
+#include "environment.h"
 
 struct interpreter : expr_visitor, stmt_visitor {
-
+    static environment env;
     value result;
+    
+    interpreter() {};
+
+    value evaluate_var_expr(var_expr* v){
+        return env.get(v->tok);
+    }
 
     value evaluate(expr* expression){
         expression->accept(this);
@@ -126,8 +133,26 @@ struct interpreter : expr_visitor, stmt_visitor {
     }
 
     void visit(print_stmt* pr_stmt){
-        std::cout << evaluate(pr_stmt->expression).stringify();
+        std::cout << evaluate(pr_stmt->expression).stringify() << std::endl;
         return;
+    }
+
+    void visit(var_stmt* v) {
+        value val;
+        if (v->expression != nullptr)
+           val = evaluate(v->expression);
+        env.define(v->name.lexeme, val);
+    }
+
+    void visit(var_expr* ex) {
+        result = evaluate_var_expr(ex);
+    }
+    
+    void visit(assignment_expr* ex){
+        value val = evaluate(ex->ex);
+
+        env.assign(ex->left, val);
+        result = val;
     }
 
     void execute(stmt* statement){

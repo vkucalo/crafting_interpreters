@@ -101,6 +101,7 @@ class scanner {
     }
 
     void string(){
+
         while (peek() != '"' && has_next()){
             if (peek() == '\n') line++;
             advance();
@@ -114,7 +115,7 @@ class scanner {
 
         advance();
 
-        std::string value = source.substr(start + 1, current - start - 1);
+        std::string value = source.substr(start + 1, current - start - 2);
         add_token(STRING, value);
     }
 

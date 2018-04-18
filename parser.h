@@ -2,13 +2,14 @@
 #include "stmt.h"
 #include <vector>
 #include <iostream>
+#include "lox_runtime_error.h"
 
 struct parser {
     
     std::vector<token> tokens;
     int current = 0;
 
-    parser(std::vector<token>& t) : tokens(t) {}
+    parser(std::vector<token>& t) : tokens(t) {};
 
     bool is_at_end(){
         return tokens[current].type == token_type::EOTF;
@@ -71,6 +72,8 @@ struct parser {
             consume(token_type::RIGHT_PAREN, "Expect ) after expression");
             return new grouping(expr);
         }
+        if (match({IDENTIFIER}))
+            return new var_expr(previous());
 
     }
 
@@ -123,8 +126,21 @@ struct parser {
         return expression;
     }
 
+    expr* assignment(){
+        expr* left = equality();
+
+        if (match({EQUAL})){
+            expr* right = assignment();
+            var_expr* asignee = dynamic_cast<var_expr*>(left);
+            if (asignee)
+                return new assignment_expr(right, asignee->tok);
+            std::cout << "Invalid assignment target.";
+        }
+        return left;
+    }
+
     expr* expression(){
-        return equality();
+        return assignment();
     }
 
     // expr* ternary_exp(){
@@ -178,10 +194,24 @@ struct parser {
         return expression_statement();
     }
 
+    stmt* var_declaration(){
+        token name = consume(IDENTIFIER, "Expected a variable name");
+        expr_stmt* e = nullptr;
+        if (match({EQUAL})) 
+            e = expression_statement();
+        return new var_stmt(e->expression, name);
+    }
+
+    stmt* declaration(){
+        if(match({VAR}))
+            return var_declaration();
+        return statement();
+    }
+
     std::vector<stmt*> parse(){
         std::vector<stmt*> statements;
         while(!is_at_end())
-            statements.emplace_back(statement());
+            statements.emplace_back(declaration());
         return statements;
     }
 };

@@ -8,8 +8,11 @@
 #include "parser.h"
 #include "interpreter.h"
 #include "stmt.h"
+#include "environment.h"
 
 static error_logger log;
+
+environment interpreter::env;
 
 static void runtime_error(lox_runtime_error e){
     log.error(e.message, e.tok.line);
