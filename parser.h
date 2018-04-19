@@ -62,7 +62,7 @@ struct parser {
         if (match({TRUE}))
             return new literal("true");
         if (match({NIL}))
-            return new literal("nil");
+            return new literal();
         if (match({NUMBER}))
             return new literal(std::stod(previous().literal));
         if (match({STRING}))
@@ -139,7 +139,7 @@ struct parser {
 
     expr*_or(){
         expr* left = _and();
-
+        literal* l = reinterpret_cast<literal*>(left);
         while(match({OR})){
             token oper = previous();
             expr* right = _and();
