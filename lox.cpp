@@ -4,7 +4,7 @@
 #include <vector>
 #include <sstream>
 #include "scanner.h"
-#include "ast_printer.h"
+//#include "ast_printer.h"
 #include "parser.h"
 #include "interpreter.h"
 #include "stmt.h"

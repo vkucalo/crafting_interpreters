@@ -10,7 +10,7 @@ struct literal;
 struct ternary;
 struct var_expr;
 struct assignment_expr;
-
+struct logical_expr;
 
 struct expr_visitor{
     virtual void visit(binary* expr) = 0;
@@ -19,6 +19,7 @@ struct expr_visitor{
     virtual void visit(literal* expr) = 0;
     virtual void visit(var_expr* expr) = 0;
     virtual void visit(assignment_expr* expr) = 0;
+    virtual void visit(logical_expr* expr) = 0;
     // virtual void visit(ternary* expr) = 0;
 };
 
@@ -82,7 +83,7 @@ struct literal : expr {
 
     literal() : val() {};
 
-    void accept(expr_visitor* visitor){
+    void accept(expr_visitor* visitor) {
         visitor->visit(this);
     }
 };
@@ -92,7 +93,7 @@ struct var_expr : expr {
 
     var_expr(token t) : tok(t) {};
 
-    void accept(expr_visitor* visitor){
+    void accept(expr_visitor* visitor) {
         visitor->visit(this);
     }
 };
@@ -103,9 +104,20 @@ struct assignment_expr : expr {
 
     assignment_expr(expr* e, token l) : ex(e), left(l) {};
 
-    void accept(expr_visitor* visitor){
+    void accept(expr_visitor* visitor) {
         visitor->visit(this);
     }
 };
 
+struct logical_expr : expr {
+    expr* left;
+    token oper;
+    expr* right;
+
+    logical_expr(expr* l, token t, expr* r) : left(l), oper(t), right(r) {};
+
+    void accept(expr_visitor* visitor) {
+        visitor->visit(this);
+    }
+};
 

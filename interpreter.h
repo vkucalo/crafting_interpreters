@@ -128,7 +128,6 @@ struct interpreter : expr_visitor, stmt_visitor {
 		result = expr->val; 
 	}
 
-
     void visit(var_expr* ex) {
         result = evaluate_var_expr(ex);
     }
@@ -138,6 +137,23 @@ struct interpreter : expr_visitor, stmt_visitor {
 
         env.assign(ex->left, val);
         result = val;
+    }
+
+    void visit(logical_expr* ex){
+        value left = evaluate(ex->left);
+        if (ex->oper.type == OR){
+            if (is_truthy(left)){
+                result = left;
+                return;
+            } 
+        }
+        else{
+            if (!is_truthy(left)){
+                result = left;
+                return;
+            }
+        }
+        result = evaluate(ex->right);
     }
 
     void execute(stmt* statement){
@@ -174,17 +190,28 @@ struct interpreter : expr_visitor, stmt_visitor {
         env.define(v->name.lexeme, val);
     }
 
-    void visit(block_stmt* b){
+    void visit(block_stmt* b) {
         execute_block(b, new environment(env));
     }
 
-    value interpret(std::vector<stmt*>& statements){
+    void visit(if_stmt* s) {
+        value condition = evaluate(s->condition);
+        if (!is_truthy(condition))
+            throw lox_runtime_error(token(), "Conditional must evalute to a boolean value.");
+        if (condition.boolean_value){
+            execute(s->then_branch);
+            return;
+        }
+        execute(s->else_branch);
+    }
+
+    value interpret(std::vector<stmt*>& statements) {
         try{
-            for(auto& statement : statements){
+            for(auto& statement : statements) {
                 execute(statement);
             }
         }
-        catch (std::exception e){
+        catch (std::exception e) {
             std::cout << "error!";
         }
         return result;

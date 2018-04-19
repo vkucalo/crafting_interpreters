@@ -126,8 +126,30 @@ struct parser {
         return expression;
     }
 
-    expr* assignment(){
+    expr* _and(){
         expr* left = equality();
+
+        while(match({AND})){
+            token oper = previous();
+            expr* right = equality();
+            left = new logical_expr(left, oper, right);
+        }
+        return left;
+    }
+
+    expr*_or(){
+        expr* left = _and();
+
+        while(match({OR})){
+            token oper = previous();
+            expr* right = _and();
+            left = new logical_expr(left, oper, right);
+        } 
+        return left;
+    }
+
+    expr* assignment(){
+        expr* left = _or();
 
         if (match({EQUAL})){
             expr* right = assignment();
@@ -197,11 +219,24 @@ struct parser {
         return new block_stmt(statements);
     }
 
+    if_stmt* if_statement(){
+        consume(LEFT_PAREN, "Expected ( before condition.");
+        expr* condition = equality();
+        consume(RIGHT_PAREN,"Expected ) after condition." );
+        stmt* then_branch = declaration();
+        stmt* else_branch;
+        if (match({ELSE}))
+            else_branch = declaration();
+        return new if_stmt(condition, then_branch, else_branch);
+    }
+
     stmt* statement(){
         if (match({PRINT}))
             return print_statement();
         if (match({LEFT_BRACE}))
-            return block_statement();
+            return block_statement(); 
+        if (match({IF}))
+            return if_statement();
         return expression_statement();
     }
 
