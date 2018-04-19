@@ -10,6 +10,7 @@ struct stmt_visitor {
     virtual void visit(expr_stmt*) = 0;
     virtual void visit(print_stmt*) = 0;
     virtual void visit(var_stmt* v) = 0;
+    virtual void visit(block_stmt* v) = 0;
     // virtual void visit(block_stmt* v) = 0;
 };
 
@@ -42,6 +43,16 @@ struct var_stmt : stmt {
     token name;
 
     var_stmt(expr* e, token t) : expression(e), name(t) {};
+
+    void accept(stmt_visitor* visitor){
+        visitor->visit(this);
+    }
+};
+
+struct block_stmt : stmt {
+    std::vector<stmt*> statements;
+
+    block_stmt(std::vector<stmt*> s) : statements(s) {};
 
     void accept(stmt_visitor* visitor){
         visitor->visit(this);

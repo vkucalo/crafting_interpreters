@@ -188,9 +188,20 @@ struct parser {
         return new print_stmt(ex);
     }
 
+    block_stmt* block_statement(){
+        std::vector<stmt*> statements;
+        while(!check({RIGHT_BRACE}) && !is_at_end()){
+            statements.emplace_back(declaration());
+        }
+        consume(RIGHT_BRACE, "Expected a } after block.");
+        return new block_stmt(statements);
+    }
+
     stmt* statement(){
         if (match({PRINT}))
             return print_statement();
+        if (match({LEFT_BRACE}))
+            return block_statement();
         return expression_statement();
     }
 

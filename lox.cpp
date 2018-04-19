@@ -43,9 +43,10 @@ static void run_file(char* path){
     std::stringstream file_as_sstream;
     file_as_sstream << file_contents.rdbuf();
     std::string line;
-    while(std::getline(file_as_sstream, line)){
-        run(line);       
-    }
+    run(file_as_sstream.str());
+    // while(std::getline(file_as_sstream, line)){
+    //     run(line);       
+    // }
 }
 
 static void run_prompt(){

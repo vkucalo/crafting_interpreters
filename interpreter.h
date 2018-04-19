@@ -128,6 +128,36 @@ struct interpreter : expr_visitor, stmt_visitor {
 		result = expr->val; 
 	}
 
+
+    void visit(var_expr* ex) {
+        result = evaluate_var_expr(ex);
+    }
+    
+    void visit(assignment_expr* ex){
+        value val = evaluate(ex->ex);
+
+        env.assign(ex->left, val);
+        result = val;
+    }
+
+    void execute(stmt* statement){
+        statement->accept(this);
+    }
+
+    void execute_block(block_stmt* b, environment inner_env){
+        environment *outer = &env;
+        try{
+            env = inner_env;
+            for (auto& st : b->statements)
+                execute(st);
+        }
+        catch(std::exception e){
+            std::cout << "error!";
+        }
+        env = *outer;
+
+    }
+
     void visit(expr_stmt* ex_stmt){
         evaluate(ex_stmt->expression);
     }
@@ -144,19 +174,8 @@ struct interpreter : expr_visitor, stmt_visitor {
         env.define(v->name.lexeme, val);
     }
 
-    void visit(var_expr* ex) {
-        result = evaluate_var_expr(ex);
-    }
-    
-    void visit(assignment_expr* ex){
-        value val = evaluate(ex->ex);
-
-        env.assign(ex->left, val);
-        result = val;
-    }
-
-    void execute(stmt* statement){
-        statement->accept(this);
+    void visit(block_stmt* b){
+        execute_block(b, new environment(env));
     }
 
     value interpret(std::vector<stmt*>& statements){

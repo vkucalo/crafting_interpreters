@@ -1,4 +1,11 @@
 var x = 5;
-x = 6;
+var y = 6;
+{
+    var y = 99;
+    print x;
+    print y;
+    x = 33333;
+}
 print x;
+print y;
 
