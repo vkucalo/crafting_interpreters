@@ -30,7 +30,7 @@ struct parser {
     }
 
     bool check(token_type type){
-        return is_at_end() ? false : peek().type == type;
+        return !is_at_end() && peek().type == type;
     }
 
     bool match(std::vector<token_type> types){
@@ -165,17 +165,6 @@ struct parser {
         return assignment();
     }
 
-    // expr* ternary_exp(){
-    //     expr* exprs = expression();
-    //     while(match({QMARK})){
-    //         expr* thenn = expression();
-    //         consume(COLON, "expected a : ");
-    //         expr* elsee = expression();
-    //         exprs = new ternary(exprs, thenn, elsee);
-    //     }
-    //     return exprs;
-    // }
-
     void synchronize() {
         advance();
 
@@ -210,15 +199,6 @@ struct parser {
         return new print_stmt(ex);
     }
 
-    block_stmt* block_statement(){
-        std::vector<stmt*> statements;
-        while(!check({RIGHT_BRACE}) && !is_at_end()){
-            statements.emplace_back(declaration());
-        }
-        consume(RIGHT_BRACE, "Expected a } after block.");
-        return new block_stmt(statements);
-    }
-
     if_stmt* if_statement(){
         consume(LEFT_PAREN, "Expected ( before condition.");
         expr* condition = equality();
@@ -230,6 +210,53 @@ struct parser {
         return new if_stmt(condition, then_branch, else_branch);
     }
 
+    block_stmt* block_statement(){
+        std::vector<stmt*> statements;
+        while(!check({RIGHT_BRACE}) && !is_at_end()){
+            statements.emplace_back(declaration());
+        }
+        consume(RIGHT_BRACE, "Expected a } after block.");
+        return new block_stmt(statements);
+    }
+
+    while_stmt* while_statement(){
+        consume(LEFT_PAREN, "Expected ( before condition.");
+        expr* condition = equality();
+        consume(RIGHT_PAREN,"Expected ) after condition." );
+        consume(LEFT_BRACE, "Expected a { before while loop.");
+        stmt* statement = block_statement();
+        return new while_stmt(condition, statement);
+    }
+
+    stmt* for_statement(){
+        consume(LEFT_PAREN, "Expected ( before condition.");
+        stmt* initializer;
+        if(match({SEMICOLON}))
+            initializer = nullptr;
+        else if(match({VAR}))
+            initializer = var_declaration();
+        else
+            initializer = expression_statement();
+        
+        expr* condition = new literal("true");
+        if(!check({SEMICOLON}))
+            condition = equality();
+        consume(SEMICOLON, "Expect ';' after loop condition.");
+
+        expr_stmt* increment = nullptr;
+        if (!check(RIGHT_PAREN)) 
+            increment = expression_statement();    
+        consume(RIGHT_PAREN,"Expected ) after condition." );
+        stmt* body = statement();
+        if (increment != nullptr)
+            body = new block_stmt({body, increment});
+
+        body = new while_stmt(condition, body);
+        if(initializer != nullptr)
+            body = new block_stmt({initializer, body});
+        
+        return body;
+    }
     stmt* statement(){
         if (match({PRINT}))
             return print_statement();
@@ -237,6 +264,10 @@ struct parser {
             return block_statement(); 
         if (match({IF}))
             return if_statement();
+        if (match({WHILE}))
+            return while_statement();
+        if (match({FOR}))
+            return for_statement();
         return expression_statement();
     }
 

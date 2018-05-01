@@ -193,7 +193,7 @@ struct interpreter : expr_visitor, stmt_visitor {
     void visit(block_stmt* b) {
         execute_block(b, new environment(env));
     }
-
+     
     void visit(if_stmt* s) {
         value condition = evaluate(s->condition);
         if (!is_truthy(condition))
@@ -203,6 +203,12 @@ struct interpreter : expr_visitor, stmt_visitor {
             return;
         }
         execute(s->else_branch);
+    }
+
+    void visit(while_stmt* s){
+        while(is_truthy(evaluate(s->condition))){
+            execute(s->statement);
+        }
     }
 
     value interpret(std::vector<stmt*>& statements) {

@@ -1,4 +1,5 @@
 ./vscode
+input.txt
 tools/tools/tools.vcxproj.filters
 tools/tools/tools.vcxproj
 tools/tools/Debug/vc141.pdb

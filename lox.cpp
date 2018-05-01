@@ -54,7 +54,7 @@ static void run_prompt(){
         std::cout << ">";
         std::string s;
         std::cin >> s;
-        run(s);
+        run(s.c_str());
         if (log.had_error) return;
     }
 }
