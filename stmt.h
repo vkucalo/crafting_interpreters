@@ -7,6 +7,7 @@ struct block_stmt;
 struct var_stmt;
 struct if_stmt;
 struct while_stmt;
+struct fun_stmt;
 
 struct stmt_visitor {
     virtual void visit(expr_stmt*) = 0;
@@ -15,6 +16,7 @@ struct stmt_visitor {
     virtual void visit(block_stmt* v) = 0;
     virtual void visit(if_stmt* v) = 0;
     virtual void visit(while_stmt* v) = 0;
+    virtual void visit(fun_stmt* v) = 0;
 };
 
 struct stmt {
@@ -81,6 +83,18 @@ struct while_stmt : stmt {
     while_stmt(expr* c, stmt* s) : condition(c), statement(s) { };
 
     void accept(stmt_visitor* visitor){
+        visitor->visit(this);
+    }
+};
+
+struct fun_stmt : stmt {
+    token name;
+    std::vector<token> parameters;
+    block_stmt* body;
+
+    fun_stmt(token n, std::vector<token> p, block_stmt* b) : name(n), parameters(p), body(b) {};
+
+    void accept(stmt_visitor* visitor) {
         visitor->visit(this);
     }
 };

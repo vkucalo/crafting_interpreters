@@ -77,13 +77,35 @@ struct parser {
 
     }
 
+    expr* finish_call(expr* callee){
+        std::vector<expr*> arguments;
+        if (!check(RIGHT_PAREN)){
+            do{
+                arguments.emplace_back(expression());
+            } while(match({COMMA}));
+        }
+        token r_paren = consume(RIGHT_PAREN, "Expect ')' after arguments.");
+        return new call_expr(callee, r_paren, arguments);
+    }
+
+    expr* call(){
+        expr* call = primary();
+        while (true){
+            if (match({LEFT_PAREN}))
+                call = finish_call(call);
+            else
+                break;
+        };
+        return call;
+    }
+
     expr* unar(){
         if(match({BANG, MINUS})){
             token oper = previous();
             expr* right = unar();
             return new unary(right, oper);
         }
-        return primary();
+        return call();
     }
 
     expr* multiplication(){

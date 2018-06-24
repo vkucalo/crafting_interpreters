@@ -1,14 +1,16 @@
 #pragma once
 #include <string>
+#include "lox_callable.h"
 
 enum value_type {
-    STRING_VALUE, DOUBLE_VALUE, BOOLEAN_VALUE, NILL_VALUE
+    STRING_VALUE, DOUBLE_VALUE, BOOLEAN_VALUE, NILL_VALUE, CALLABLE_VALUE
 };
 
 struct value {
     std::string string_value;
     double double_value = 0;
     bool boolean_value;
+    lox_callable callable_value;
 
     value_type v_type;
 
@@ -18,6 +20,8 @@ struct value {
 
     value(bool b) : boolean_value(b), v_type(BOOLEAN_VALUE) {};
 
+    value(lox_callable c) : callable_value(c), v_type(CALLABLE_VALUE) {};
+    
     value() : v_type(NILL_VALUE) {};
 
     std::string stringify(){

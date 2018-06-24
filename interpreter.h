@@ -4,6 +4,7 @@
 #include "lox_runtime_error.h"
 #include "stmt.h"
 #include "environment.h"
+#include "lox_callable.h"
 
 struct interpreter : expr_visitor, stmt_visitor {
     static environment env;
@@ -127,6 +128,23 @@ struct interpreter : expr_visitor, stmt_visitor {
 	void visit(literal* expr){
 		result = expr->val; 
 	}
+
+    void visit(call_expr* expr){
+        value callee = evaluate(expr->callee);
+
+        std::vector<value> arguments;
+        for (auto& a : expr->arguments){
+            arguments.emplace_back(evaluate(a));
+        }
+        if (callee.v_type != CALLABLE_VALUE)
+            throw lox_runtime_error(expr.paren, "Can only call functions and classes.");
+
+        if (arguments.size() > callee.arity)
+            throw lox_runtime_error(expr.paren, std::string("Expected ", callee.arity(), " arguments, got ", arguments.size(), " .");
+        
+        lox_callable function = callee.callable_value;
+        result = function.call(this, function);
+    }
 
     void visit(var_expr* ex) {
         result = evaluate_var_expr(ex);

@@ -8,7 +8,7 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/a.out",
+            "program": "${workspaceFolder}/lox",
             "args": ["-s", "input.txt"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
