@@ -9,6 +9,15 @@
             "command": "g++",
             "args": [
                 "lox.cpp",
+                "environment.cpp", 
+                "interpreter.cpp",
+                "lox_function.cpp",
+                "parser.cpp",
+                "stmt.cpp",
+                "token.cpp",
+                "value.cpp",
+                "expr.cpp",
+                "scanner.cpp",
                 "-std=c++17",
                 "-g"
             ],

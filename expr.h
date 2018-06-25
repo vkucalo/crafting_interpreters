@@ -2,27 +2,7 @@
 #include <string>
 #include "token.h"
 #include "value.h"
-
-struct binary;
-struct grouping;
-struct unary;
-struct literal;
-struct ternary;
-struct var_expr;
-struct assignment_expr;
-struct logical_expr;
-struct call_expr; 
-
-struct expr_visitor{
-    virtual void visit(binary* expr) = 0;
-    virtual void visit(grouping* expr) = 0;
-    virtual void visit(unary* expr) = 0;
-    virtual void visit(literal* expr) = 0;
-    virtual void visit(var_expr* expr) = 0;
-    virtual void visit(assignment_expr* expr) = 0;
-    virtual void visit(logical_expr* expr) = 0;
-    virtual void visit(call_expr* expr) = 0;
-};
+#include "expr_visitor.h"
 
 struct expr {
     virtual void accept(expr_visitor* visitor) = 0; 
@@ -31,11 +11,8 @@ struct expr {
 struct grouping : expr {
     expr* expression;
 
-    grouping(expr* e) : expression(e) {};
-
-    void accept(expr_visitor* visitor){
-        visitor->visit(this);
-    }
+    grouping(expr* e);
+    void accept(expr_visitor* visitor);
 };
 
 struct binary : expr {
@@ -43,59 +20,40 @@ struct binary : expr {
     token op;
     expr* right;
 
-    binary(expr* l, token tok, expr* r) : left(l), op(tok), right(r) {};
-
-    void accept(expr_visitor* visitor){
-        visitor->visit(this);
-    }
+    binary(expr* l, token tok, expr* r);
+    void accept(expr_visitor* visitor);
 };
 
 struct unary : expr {
     expr* ex;
     token op;
 
-    unary(expr* e, token t) : ex(e), op(t) {};
-
-    void accept(expr_visitor* visitor){
-        visitor->visit(this);
-    }
+    unary(expr* e, token t);
+    void accept(expr_visitor* visitor);
 };
 
 struct literal : expr { 
 	value val;
-
-	literal(std::string v) : val(v) {};
-
-    literal(double d) : val(d) {};
-
-    literal(bool b) : val(b) {};
-
-    literal() : val() {};
-
-    void accept(expr_visitor* visitor) {
-        visitor->visit(this);
-    }
+	literal(std::string v);
+    literal(double d);
+    literal(bool b);
+    literal();
+    void accept(expr_visitor* visitor);
 };
 
 struct var_expr : expr {
     token tok;
 
-    var_expr(token t) : tok(t) {};
-
-    void accept(expr_visitor* visitor) {
-        visitor->visit(this);
-    }
+    var_expr(token t);
+    void accept(expr_visitor* visitor);
 };
 
 struct assignment_expr : expr {
     token left;
     expr* ex;
 
-    assignment_expr(expr* e, token l) : ex(e), left(l) {};
-
-    void accept(expr_visitor* visitor) {
-        visitor->visit(this);
-    }
+    assignment_expr(expr* e, token l);
+    void accept(expr_visitor* visitor);
 };
 
 struct logical_expr : expr {
@@ -103,11 +61,8 @@ struct logical_expr : expr {
     token oper;
     expr* right;
 
-    logical_expr(expr* l, token t, expr* r) : left(l), oper(t), right(r) {};
-
-    void accept(expr_visitor* visitor) {
-        visitor->visit(this);
-    }
+    logical_expr(expr* l, token t, expr* r);
+    void accept(expr_visitor* visitor);
 };
 
 struct call_expr : expr {
@@ -115,10 +70,8 @@ struct call_expr : expr {
     token paren;
     std::vector<expr*> arguments;
 
-    call_expr(expr* c, token par, std::vector<expr*>& args) : callee(c), paren(par), arguments(args) {};
+    call_expr(expr* c, token par, std::vector<expr*>& args);
 
-    void accept(expr_visitor* visitor){
-        visitor->visit(this);
-    }
+    void accept(expr_visitor* visitor);
 };
 

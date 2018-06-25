@@ -27,6 +27,11 @@
         "typeinfo": "cpp",
         "utility": "cpp",
         "string": "cpp",
-        "cmath": "cpp"
+        "cmath": "cpp",
+        "cstdarg": "cpp",
+        "unordered_map": "cpp",
+        "vector": "cpp",
+        "functional": "cpp",
+        "numeric": "cpp"
     }
 }

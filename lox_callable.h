@@ -1,9 +1,10 @@
 #pragma once
 #include <vector>
-#include "interpreter.h"
-#include "value.h"
+
+struct interpreter;
+struct value;
 
 struct lox_callable {
-    int arity;
-    virtual value call(interpreter inter, std::vector<value> arguments) = 0;
-}
+    virtual int arity() = 0;
+    virtual value call(interpreter* inter, std::vector<value> arguments) = 0;
+};

@@ -32,13 +32,8 @@ struct token {
     std::string literal;
     int line;
 	
-	token() { };
-
-    token(const token_type type, const std::string &lexeme,
-          const std::string &literal, int line) : type(type), lexeme(lexeme),
-                                                        literal(literal), line(line) { }
-    std::string str(){
-        return std::string(lexeme + " " + literal);
-    }
+	token();
+    token(const token_type type, const std::string &lexeme, const std::string &literal, int line);
+    std::string str();
 
 };

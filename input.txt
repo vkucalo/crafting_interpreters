@@ -1,2 +1,6 @@
-print nil or "yes";
+fun add(a, b){
+    print(a);
+}
+
+add(5, 6);
 
